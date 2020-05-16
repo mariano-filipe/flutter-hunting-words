@@ -13,9 +13,10 @@ class _PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    final boardHeight = 0.5 * MediaQuery.of(context).size.height;
-    print("[PlayPage] width: ${MediaQuery.of(context).size.width}");
-    print("boardHeight: $boardHeight");
+    final size = MediaQuery.of(context).size;
+    final boardWidth = size.width;
+    final boardHeight = 0.5 * size.height;
+    print("[PlayPage] Board(width=$boardWidth, height=$boardHeight)");
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +32,11 @@ class _PlayPageState extends State<PlayPage> {
                 child: Text(_gameText),
               ),
               Flexible(
-                child: Board(height: boardHeight, words: _gameWords),
+                child: Board(
+                  width: boardWidth,
+                  height: boardHeight,
+                  words: _gameWords,
+                ),
               ),
             ],
           ),
