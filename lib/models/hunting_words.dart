@@ -330,12 +330,14 @@ class HuntingWords {
       "height": opts["height"] ?? maxWordLength,
       "width": opts["width"] ?? maxWordLength,
       "orientations": opts["orientations"] ?? allOrientations,
-      "fillBlanks": opts["fillBlanks"] != null ? opts.fillBlanks : true,
+      "fillBlanks": opts["fillBlanks"] != null ? opts["fillBlanks"] : true,
       "allowExtraBlanks":
-          opts["allowExtraBlanks"] != null ? opts.allowExtraBlanks : true,
+          opts["allowExtraBlanks"] != null ? opts["allowExtraBlanks"] : true,
       "maxAttempts": opts["maxAttempts"] ?? 3,
-      "maxGridGrowth": opts["maxGridGrowth"] != null ? opts.maxGridGrowth : 10,
-      "preferOverlap": opts["preferOverlap"] != null ? opts.preferOverlap : true
+      "maxGridGrowth":
+          opts["maxGridGrowth"] != null ? opts["maxGridGrowth"] : 10,
+      "preferOverlap":
+          opts["preferOverlap"] != null ? opts["preferOverlap"] : true
     };
 
     // add the words to the puzzle
@@ -344,8 +346,8 @@ class HuntingWords {
     while (puzzle == null) {
       while (puzzle == null && attempts < options["maxAttempts"]) {
         puzzle = _fillPuzzle(wordList, options);
+        attempts++;
       }
-      attempts++;
 
       if (puzzle == null) {
         gridGrowths++;

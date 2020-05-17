@@ -9,7 +9,18 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   final _gameText = "amor";
-  final _gameWords = ["barco", "remo", "maçã", "banana"];
+  final _gameWords = [
+    "banana",
+    "maca",
+    "abacaxi",
+    "laranja",
+    "melao",
+    "melancia",
+    "pera",
+    "pessego",
+    "abacate",
+    "tomate"
+  ];
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
+import "package:hunting_words/models/hunting_words.dart";
 
 class Board extends StatefulWidget {
   final double width;
@@ -20,8 +20,9 @@ class Board extends StatefulWidget {
 }
 
 class _BoardState extends State<Board> {
-  final nRows = 5;
-  final nCols = 5;
+  final nRows = 8;
+  final nCols = 8;
+  List<List<String>> puzzle;
   List<int> hitLetters = [];
   int startIndex;
 
@@ -34,15 +35,24 @@ class _BoardState extends State<Board> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final randomLetters = generateRandomLetters();
+  void initState() {
+    puzzle = HuntingWords(words: widget.words, settings: {
+      "width": nRows,
+      "height": nCols,
+    }).puzzle;
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         GridView.count(
           childAspectRatio: letterWidth / letterHeight,
           crossAxisCount: nCols,
-          children: randomLetters
+          children: puzzle
+              .expand((i) => i)
+              .toList()
               .asMap()
               .map(
                 (index, letter) => MapEntry(
@@ -73,36 +83,6 @@ class _BoardState extends State<Board> {
         ),
       ],
     );
-  }
-
-  List<String> generateRandomLetters() {
-    return [
-      'a',
-      'x',
-      'd',
-      'a',
-      'e',
-      'm',
-      'a',
-      'm',
-      'o',
-      'r',
-      'f',
-      'b',
-      'ç',
-      'c',
-      'g',
-      's',
-      'l',
-      'e',
-      'i',
-      'f',
-      'u',
-      'a',
-      'd',
-      'o',
-      'm'
-    ];
   }
 
   int computeLetterIndex(Offset localPosition) {
@@ -152,40 +132,29 @@ class _BoardState extends State<Board> {
     final currentIndex = computeLetterIndex(details.localPosition);
 
     if (checkSameRow(startIndex, currentIndex)) {
-      print("[onPanUpdate] row selection");
       this.setState(() {
         hitLetters = genSelection(startIndex, currentIndex, 1);
       });
     } else if (checkSameCol(startIndex, currentIndex)) {
-      print("[onPanUpdate] col selection");
       this.setState(() {
         hitLetters = genSelection(startIndex, currentIndex, nCols);
       });
     } else if (checkSameMainDiagonal(startIndex, currentIndex)) {
-      print("[onPanUpdate] main diagonal selection");
       this.setState(() {
         hitLetters = genSelection(startIndex, currentIndex, nCols + 1);
       });
     } else if (checkSameCounterDiagonal(startIndex, currentIndex)) {
-      print("[onPanUpdate] counter diagonal selection");
       this.setState(() {
         hitLetters = genSelection(startIndex, currentIndex, nCols - 1);
       });
-    } else {
-      print("[onPanUpdate] invalid selection");
     }
   }
 
-  void onPanEnd(DragEndDetails details) {
-    print("[onPandEnd]");
-  }
+  void onPanEnd(DragEndDetails details) {}
 
   void onPanStart(DragStartDetails details) {
-    final letterIndex = computeLetterIndex(details.localPosition);
-    print("[onPanStart] hit letter $letterIndex");
-
     this.setState(() {
-      startIndex = letterIndex;
+      startIndex = computeLetterIndex(details.localPosition);
     });
   }
 }
