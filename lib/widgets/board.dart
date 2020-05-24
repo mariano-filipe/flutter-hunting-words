@@ -7,12 +7,14 @@ class Board extends StatefulWidget {
   final double width;
   final double height;
   final List<String> words;
+  final onHitWord;
 
   Board(
       {Key key,
       @required this.width,
       @required this.height,
-      @required this.words})
+      @required this.words,
+      @required this.onHitWord})
       : super(key: key);
 
   @override
@@ -20,10 +22,11 @@ class Board extends StatefulWidget {
 }
 
 class _BoardState extends State<Board> {
-  final nRows = 8;
-  final nCols = 8;
-  List<List<String>> puzzle;
-  List<int> hitLetters = [];
+  final nRows = 10;
+  final nCols = 10;
+  List<String> puzzle;
+  List<int> selection = [];
+  List<int> hitIndexes = [];
   int startIndex;
 
   double get letterWidth {
@@ -36,10 +39,12 @@ class _BoardState extends State<Board> {
 
   @override
   void initState() {
-    puzzle = HuntingWords(words: widget.words, settings: {
+    var _puzzle = HuntingWords(words: widget.words, settings: {
       "width": nRows,
       "height": nCols,
     }).puzzle;
+    puzzle = _puzzle.expand((i) => i).toList();
+
     super.initState();
   }
 
@@ -51,15 +56,14 @@ class _BoardState extends State<Board> {
           childAspectRatio: letterWidth / letterHeight,
           crossAxisCount: nCols,
           children: puzzle
-              .expand((i) => i)
-              .toList()
               .asMap()
               .map(
                 (index, letter) => MapEntry(
                   index,
                   BoardLetter(
                     letter,
-                    hitLetters.contains(index),
+                    isSelected: selection.contains(index),
+                    isHit: hitIndexes.contains(index),
                   ),
                 ),
               )
@@ -74,7 +78,7 @@ class _BoardState extends State<Board> {
             onPanEnd: onPanEnd,
             onPanUpdate: (details) => onPanUpdate(details),
             child: Opacity(
-              opacity: 0.3,
+              opacity: 0,
               child: Container(
                 color: Colors.red,
               ),
@@ -116,41 +120,57 @@ class _BoardState extends State<Board> {
   }
 
   List<int> genSelection(int startIndex, int endIndex, int growFactor) {
-    final selection = <int>[];
+    final _selection = <int>[];
     if (startIndex > endIndex) {
       var temp = startIndex;
       startIndex = endIndex;
       endIndex = temp;
     }
     for (int i = startIndex; i <= endIndex; i += growFactor) {
-      selection.add(i);
+      _selection.add(i);
     }
-    return selection;
+    return _selection;
   }
 
   void onPanUpdate(DragUpdateDetails details) {
     final currentIndex = computeLetterIndex(details.localPosition);
-
+    List<int> _selection = [];
     if (checkSameRow(startIndex, currentIndex)) {
-      this.setState(() {
-        hitLetters = genSelection(startIndex, currentIndex, 1);
-      });
+      _selection = genSelection(startIndex, currentIndex, 1);
     } else if (checkSameCol(startIndex, currentIndex)) {
-      this.setState(() {
-        hitLetters = genSelection(startIndex, currentIndex, nCols);
-      });
+      _selection = genSelection(startIndex, currentIndex, nCols);
     } else if (checkSameMainDiagonal(startIndex, currentIndex)) {
-      this.setState(() {
-        hitLetters = genSelection(startIndex, currentIndex, nCols + 1);
-      });
+      _selection = genSelection(startIndex, currentIndex, nCols + 1);
     } else if (checkSameCounterDiagonal(startIndex, currentIndex)) {
-      this.setState(() {
-        hitLetters = genSelection(startIndex, currentIndex, nCols - 1);
-      });
+      _selection = genSelection(startIndex, currentIndex, nCols - 1);
     }
+
+    this.setState(() {
+      selection = _selection;
+    });
   }
 
-  void onPanEnd(DragEndDetails details) {}
+  void onPanEnd(DragEndDetails details) {
+    final word = selection
+        .map((index) => puzzle[index])
+        .fold("", (value, letter) => value + letter);
+
+    // Check if this is a valid word
+    var reversedWord = word.split('').reversed.join();
+    var wordIndex = widget.words
+        .indexWhere((gameWord) => gameWord == word || gameWord == reversedWord);
+
+    if (wordIndex != -1) {
+      print("word $word/$reversedWord was hit");
+      widget.onHitWord(word, wordIndex);
+      this.setState(() {
+        hitIndexes = List.from(hitIndexes)..addAll(selection);
+      });
+    }
+    this.setState(() {
+      selection = [];
+    });
+  }
 
   void onPanStart(DragStartDetails details) {
     this.setState(() {
@@ -162,18 +182,30 @@ class _BoardState extends State<Board> {
 class BoardLetter extends StatelessWidget {
   final String letter;
   final bool isSelected;
+  final bool isHit;
 
   const BoardLetter(
-    this.letter,
-    this.isSelected, {
+    this.letter, {
+    @required this.isSelected,
+    @required this.isHit,
     Key key,
   }) : super(key: key);
+
+  Color get color {
+    if (isSelected) {
+      return Colors.pink;
+    }
+    if (isHit) {
+      return Colors.orange;
+    }
+    return Colors.blue;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: isSelected ? Colors.orange : Colors.blue,
+        color: color,
         border: Border.all(width: 1),
       ),
       child: Center(child: Text(letter)),

@@ -3,7 +3,8 @@
 * (c) 2012 Bill, BunKat LLC.
 * Wordfind is freely distributable under the MIT license.
 * For all details and documentation: http://github.com/bunkat/wordfind
-* - Translation to Dart by Filipe Mariano (fmarianofs@gmail.com)
+*
+* Transpilation to Dart by Filipe Mariano (github.com/mariano-filipe)
 */
 
 import 'dart:math';
