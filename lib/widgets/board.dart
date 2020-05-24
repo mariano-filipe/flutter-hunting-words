@@ -191,21 +191,21 @@ class BoardLetter extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
-  Color get color {
+  Color getColor(BuildContext context) {
     if (isSelected) {
-      return Colors.pink;
+      return Theme.of(context).primaryColor;
     }
     if (isHit) {
-      return Colors.orange;
+      return Theme.of(context).accentColor;
     }
-    return Colors.blue;
+    return Colors.white;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: color,
+        color: getColor(context),
         border: Border.all(width: 1),
       ),
       child: Center(child: Text(letter)),

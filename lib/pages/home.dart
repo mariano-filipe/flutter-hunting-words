@@ -21,10 +21,10 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const Text("Caça Palavras"),
+            const Text("Hunting Words"),
             RaisedButton(
               onPressed: () => Navigator.of(context).pushNamed('/play'),
-              child: const Text('Jogar'),
+              child: const Text('Play'),
             )
           ],
         ),

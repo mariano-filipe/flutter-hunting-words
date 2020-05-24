@@ -10,16 +10,16 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   final gameWords = [
+    "apple",
+    "avocado",
     "banana",
-    "maca",
-    "abacaxi",
-    "laranja",
-    "melao",
-    "pera",
-    "pessego",
-    "abacate",
-    "tomate",
-    "melancia",
+    "melon",
+    "orange",
+    "peach",
+    "pear",
+    "pineapple",
+    "tomato",
+    "watermelon",
   ];
   List<int> hitWordIndexes = [];
 
@@ -47,15 +47,15 @@ class _PlayPageState extends State<PlayPage> {
         context: context,
         barrierDismissible: false,
         builder: (_) => AlertDialog(
-          title: Text("Parabéns!"),
-          content: Text("Você encontrou todas as palavras."),
+          title: Text("Way to Go!"),
+          content: Text("You found all the words."),
           actions: [
             FlatButton(
-              child: Text("Início"),
+              child: Text("Home"),
               onPressed: () => onHomeAction(context),
             ),
             FlatButton(
-              child: Text("Novo Jogo"),
+              child: Text("New Game"),
               onPressed: () => onNewGameAction(context),
             ),
           ],
@@ -69,10 +69,9 @@ class _PlayPageState extends State<PlayPage> {
     final size = MediaQuery.of(context).size;
     final boardWidth = size.width;
     final boardHeight = 0.5 * size.height;
-    print("[PlayPage] Board(width=$boardWidth, height=$boardHeight)");
 
     return Scaffold(
-      appBar: AppBar(title: Text('Jogar')),
+      appBar: AppBar(title: Text('Play')),
       body: SizedBox.expand(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
